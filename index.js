@@ -2,14 +2,14 @@ const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
 require('dotenv').config();
-const cors = require('cors');
 const port = process.env.PORT;
 const MONGO_CONNECTION_STRING = process.env.MONGODB_URI;
+const cors = require('cors');
 
 //import routes
 const memesRoute = require("./routes/memes");
 
-//Settinp up
+//Settinp up app to use
 app.use("/memes", memesRoute);
 app.use(cors());
 

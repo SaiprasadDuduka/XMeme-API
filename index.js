@@ -22,4 +22,4 @@ mongoose.connect(MONGO_CONNECTION_STRING,
 );
 
 //Listening on port
-app.listen(port, ()=>console.log("Server has started!"));
+app.listen(port, () => console.log("Server has started!"));

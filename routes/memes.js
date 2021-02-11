@@ -33,7 +33,7 @@ router.get("/", async (req, res) => {
 
 //CREATE - create a new meme 
 router.post("/", urlencodedParser, async (req, res) => {
-    try{
+    try {
         const meme = new XMeme({
             name: req.body.name,
             url: req.body.url,
@@ -47,7 +47,7 @@ router.post("/", urlencodedParser, async (req, res) => {
         } catch (err) {
             res.status(404).send();
         }
-    }catch(err){
+    } catch (err) {
         res.status(422).send("Request body missing required attributes!");
     }
 });
@@ -74,11 +74,13 @@ router.get("/:id", async (req, res) => {
 router.patch("/:id", urlencodedParser, async (req, res) => {
     try {
         const updatedMeme = await XMeme.updateOne(
-            { _id: req.params.id},
-            { $set: {
-                url: req.body.url, 
-                caption: req.body.caption
-            }}
+            { _id: req.params.id },
+            {
+                $set: {
+                    url: req.body.url,
+                    caption: req.body.caption
+                }
+            }
         );
         res.status(204).send();
     } catch (err) {
@@ -89,7 +91,7 @@ router.patch("/:id", urlencodedParser, async (req, res) => {
 //REMOVE - remove a meme
 router.delete("/:id", async (req, res) => {
     try {
-        const DeletedMeme = await XMeme.deleteOne({ _id: req.params.id});
+        const DeletedMeme = await XMeme.deleteOne({ _id: req.params.id });
         res.status(204).send();
     } catch (err) {
         res.status(404).send();

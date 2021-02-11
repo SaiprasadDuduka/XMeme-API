@@ -34,19 +34,32 @@ router.get("/", async (req, res) => {
 //CREATE - create a new meme 
 router.post("/", urlencodedParser, async (req, res) => {
     try {
-        const meme = new XMeme({
+        let newMeme = {
             name: req.body.name,
             url: req.body.url,
             caption: req.body.caption
+        };
+
+        XMeme.exists(newMeme, async (err, doc) => {
+            if (err) {
+                res.sendStatus(404);
+            } else {
+                if (!doc) {
+                    const meme = new XMeme(newMeme);
+
+                    try {
+                        const savedMeme = await meme.save();
+                        const formatted_res = { id: savedMeme._id }; // formatted json response
+                        res.status(200).json(formatted_res);
+                    } catch (err) {
+                        res.status(404).send();
+                    }
+                } else {
+                    res.status(409).send("Meme already exists");
+                }
+            }
         });
 
-        try {
-            const savedMeme = await meme.save();
-            const formatted_res = { id: savedMeme._id }; // formatted json response
-            res.status(200).json(formatted_res);
-        } catch (err) {
-            res.status(404).send();
-        }
     } catch (err) {
         res.status(422).send("Request body missing required attributes!");
     }
@@ -73,16 +86,32 @@ router.get("/:id", async (req, res) => {
 //UPDATE - update specified meme
 router.patch("/:id", urlencodedParser, async (req, res) => {
     try {
-        const updatedMeme = await XMeme.updateOne(
-            { _id: req.params.id },
-            {
-                $set: {
-                    url: req.body.url,
-                    caption: req.body.caption
+        let newMeme = {
+            name: req.body.name,
+            url: req.body.url,
+            caption: req.body.caption
+        };
+        
+        XMeme.exists(newMeme, async (err, doc) => {
+            if (err) {
+                res.sendStatus(404);
+            } else {
+                if (!doc) {
+                    const updatedMeme = await XMeme.updateOne(
+                        { _id: req.params.id },
+                        {
+                            $set: {
+                                url: req.body.url,
+                                caption: req.body.caption
+                            }
+                        }
+                    );
+                    res.status(204).send();
+                } else {
+                    res.status(409).send("Meme already exists");
                 }
             }
-        );
-        res.status(204).send();
+        });
     } catch (err) {
         res.status(404).send();
     }

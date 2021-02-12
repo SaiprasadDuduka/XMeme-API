@@ -1,14 +1,58 @@
 const express = require('express');
-const app = express();
 const bodyParser = require('body-parser')
 const router = express.Router();
 const XMeme = require("../models/XMeme");
-// const jsonParser = bodyParser.json();
-const urlencodedParser = bodyParser.urlencoded({ extended: false }); // create application/x-www-form-urlencoded parser
+const jsonParser = bodyParser.json();
+// const urlencodedParser = bodyParser.urlencoded({ extended: false }); // create application/x-www-form-urlencoded parser
+
+/**
+ * @swagger
+ * definitions:
+ *  Meme_post:
+ *      type: object
+ *      properties:
+ *          name:
+ *              type: string
+ *              description: Meme owner Name
+ *              example: Saiprasad Duduka
+ *          caption:
+ *              type: string
+ *              description: Meme Caption
+ *              example: Class of 2020
+ *          url:
+ *              type: string
+ *              description: Meme Image URL
+ *              example: https://i.redd.it/ay7f9jbkram41.jpg
+ *  Meme_patch:
+ *      type: object
+ *      properties:
+ *          caption:
+ *              type: string
+ *              description: Meme Caption
+ *              example: Class of 2020
+ *          url:
+ *              type: string
+ *              description: Meme Image URL
+ *              example: https://i.redd.it/ay7f9jbkram41.jpg 
+ */
 
 //ROUTES
 
 //INDEX - show 100 latest memes
+/**
+ * @swagger
+ * /memes:
+ *  get:
+ *      servers:
+ *        - url: http://localhost:8081
+ *      summary: get latest 100 memes
+ *      description: Use to request latest 100 memes
+ *      responses:
+ *          '200':
+ *              description: Successful response with json file containing memes
+ *          '404':
+ *              description: Page not found or server error
+ */
 router.get("/", async (req, res) => {
     try {
         var memes = await XMeme.find({}, {}, { sort: { date: -1 } }).limit(100);
@@ -32,7 +76,31 @@ router.get("/", async (req, res) => {
 });
 
 //CREATE - create a new meme 
-router.post("/", urlencodedParser, async (req, res) => {
+/**
+ * @swagger
+ * /memes:
+ *  post:
+ *      servers:
+ *        - url: http://localhost:8081
+ *      summary: Post meme
+ *      description: Use to post a meme
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      $ref: '#/definitions/Meme_post'
+ *      responses:
+ *          '200':
+ *              description: Successful response with json file containing memes
+ *          '404':
+ *              description: Page not found or server error
+ *          '409':
+ *              description: Duplicate post
+ *          '422':
+ *              description: Request body missing required attributes
+ */
+router.post("/", jsonParser, async (req, res) => {
     try {
         let newMeme = {
             name: req.body.name,
@@ -66,6 +134,26 @@ router.post("/", urlencodedParser, async (req, res) => {
 });
 
 //SHOW - show specified meme
+/**
+ * @swagger
+ * /memes/{id}:
+ *  get:
+ *    servers:
+ *        - url: http://localhost:8081
+ *    summary: Get a meme by ID
+ *    parameters:
+ *      - in: path
+ *        name: id
+ *        schema:
+ *           type: string
+ *        required: true
+ *        description: ID of the meme to get
+ *    responses:
+ *     '200':
+ *          description: Successful response with json file containing the specific meme
+ *     '404':
+ *          description: Meme doesn't exist
+ */
 router.get("/:id", async (req, res) => {
     try {
         var meme = await XMeme.findById(req.params.id);
@@ -84,10 +172,42 @@ router.get("/:id", async (req, res) => {
 });
 
 //UPDATE - update specified meme
-router.patch("/:id", urlencodedParser, async (req, res) => {
+/**
+ * @swagger
+ * /memes/{id}:
+ *  patch:
+ *      servers:
+ *        - url: http://localhost:8081
+ *      summary: Update meme
+ *      description: Update caption and/or url of the meme
+ *      parameters:
+ *        - in: path
+ *          name: id
+ *          schema:
+ *              type: string
+ *          required: true
+ *          description: ID of the meme to get
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      $ref: '#/definitions/Meme_patch'
+ *      responses:
+ *          '204':
+ *              description: Successfully updated the meme
+ *          '404':
+ *              description: Meme doesn't exist
+ *          '409':
+ *              description: Duplicate post
+ *          '422':
+ *              description: Request body missing required attributes
+ */
+router.patch("/:id", jsonParser, async (req, res) => {
     try {
+        const memeName = XMeme.findById(req.params.id);
         let newMeme = {
-            name: req.body.name,
+            name: memeName.name,
             url: req.body.url,
             caption: req.body.caption
         };
@@ -118,6 +238,26 @@ router.patch("/:id", urlencodedParser, async (req, res) => {
 });
 
 //REMOVE - remove a meme
+/**
+ * @swagger
+ * /memes/{id}:
+ *  delete:
+ *    servers:
+ *        - url: http://localhost:8081
+ *    summary: Delete a user by ID
+ *    parameters:
+ *      - in: path
+ *        name: id
+ *        schema:
+ *           type: string
+ *        required: true
+ *        description: ID of the meme to delete
+ *    responses:
+ *     '204':
+ *          description: Deleted successfully
+ *     '404':
+ *          description: Meme doesn't exist
+ */
 router.delete("/:id", async (req, res) => {
     try {
         const DeletedMeme = await XMeme.deleteOne({ _id: req.params.id });

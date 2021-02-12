@@ -44,7 +44,7 @@ const jsonParser = bodyParser.json();
  * /memes:
  *  get:
  *      servers:
- *        - url: http://localhost:8081
+ *        - url: http://ec2-3-17-231-21.us-east-2.compute.amazonaws.com:8081
  *      summary: get latest 100 memes
  *      description: Use to request latest 100 memes
  *      responses:
@@ -81,7 +81,7 @@ router.get("/", async (req, res) => {
  * /memes:
  *  post:
  *      servers:
- *        - url: http://localhost:8081
+ *        - url: http://ec2-3-17-231-21.us-east-2.compute.amazonaws.com:8081
  *      summary: Post meme
  *      description: Use to post a meme
  *      requestBody:
@@ -139,7 +139,7 @@ router.post("/", jsonParser, async (req, res) => {
  * /memes/{id}:
  *  get:
  *    servers:
- *        - url: http://localhost:8081
+ *        - url: http://ec2-3-17-231-21.us-east-2.compute.amazonaws.com:8081
  *    summary: Get a meme by ID
  *    parameters:
  *      - in: path
@@ -177,7 +177,7 @@ router.get("/:id", async (req, res) => {
  * /memes/{id}:
  *  patch:
  *      servers:
- *        - url: http://localhost:8081
+ *        - url: http://ec2-3-17-231-21.us-east-2.compute.amazonaws.com:8081
  *      summary: Update meme
  *      description: Update caption and/or url of the meme
  *      parameters:
@@ -243,7 +243,7 @@ router.patch("/:id", jsonParser, async (req, res) => {
  * /memes/{id}:
  *  delete:
  *    servers:
- *        - url: http://localhost:8081
+ *        - url: http://ec2-3-17-231-21.us-east-2.compute.amazonaws.com:8081
  *    summary: Delete a user by ID
  *    parameters:
  *      - in: path

@@ -10,3 +10,5 @@ A web application which lets users to post, view, update and delete memes
 1. HTML
 2. CSS, Bootstrap
 3. JavaScript
+
+### Swagger is used for documentation of API

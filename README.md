@@ -1,4 +1,6 @@
 # XMeme-API
+A web application which lets users to post, view, update and delete memes
+
 ## Backend
 1. NodeJs
 2. ExpressJs
